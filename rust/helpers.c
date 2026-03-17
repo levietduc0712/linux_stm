@@ -145,6 +145,49 @@ struct kunit *rust_helper_kunit_get_current_test(void)
 EXPORT_SYMBOL_GPL(rust_helper_kunit_get_current_test);
 
 /*
+ * IO helpers for Rust — ioremap/iounmap/readl/writel are macros or inlines
+ * that bindgen cannot process, so we provide explicit helper functions.
+ */
+#include <linux/io.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+
+void __iomem *rust_helper_ioremap(phys_addr_t phys_addr, size_t size)
+{
+	return ioremap(phys_addr, size);
+}
+EXPORT_SYMBOL_GPL(rust_helper_ioremap);
+
+void rust_helper_iounmap(volatile void __iomem *addr)
+{
+	iounmap(addr);
+}
+EXPORT_SYMBOL_GPL(rust_helper_iounmap);
+
+u32 rust_helper_readl(const volatile void __iomem *addr)
+{
+	return readl(addr);
+}
+EXPORT_SYMBOL_GPL(rust_helper_readl);
+
+void rust_helper_writel(u32 value, volatile void __iomem *addr)
+{
+	writel(value, addr);
+}
+EXPORT_SYMBOL_GPL(rust_helper_writel);
+
+/*
+ * OF / Device Tree helpers — of_node_put() is inline when CONFIG_OF_DYNAMIC
+ * is not set, so we wrap it to guarantee a callable symbol exists.
+ */
+void rust_helper_of_node_put(struct device_node *node)
+{
+	of_node_put(node);
+}
+EXPORT_SYMBOL_GPL(rust_helper_of_node_put);
+
+/*
  * `bindgen` binds the C `size_t` type as the Rust `usize` type, so we can
  * use it in contexts where Rust expects a `usize` like slice (array) indices.
  * `usize` is defined to be the same as C's `uintptr_t` type (can hold any

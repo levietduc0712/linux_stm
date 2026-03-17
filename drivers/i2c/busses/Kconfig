@@ -1112,6 +1112,21 @@ config I2C_STM32F7
 	  This driver can also be built as module. If so, the module
 	  will be called i2c-stm32f7.
 
+config I2C_STM32_RUST
+	tristate "STM32 I2C experimental Rust driver (learning only)"
+	depends on RUST
+	depends on ARCH_STM32 || COMPILE_TEST
+	help
+	  Experimental Rust platform driver for the STM32 I2C controller.
+	  This is for learning and experimentation only — it does NOT
+	  implement I2C transfers or register an i2c_adapter.
+
+	  It demonstrates Rust kernel module development by binding to
+	  the STM32 I2C controller DT node, mapping registers, and
+	  logging hardware information.
+
+	  If unsure, say N.
+
 config I2C_SUN6I_P2WI
 	tristate "Allwinner sun6i internal P2WI controller"
 	depends on RESET_CONTROLLER
